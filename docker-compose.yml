@@ -3,7 +3,9 @@ version: '3.8'
 volumes:
     db:
         driver: local
-    data:
+    platform-data:
+        driver: local
+    rabbitmq-data:
         driver: local
 
 services:
@@ -15,17 +17,17 @@ services:
             - MONGO_INITDB_DATABASE=IOTPlatform_v3
         volumes:
             - db:/data/db
-        ports:
-            - 27020:27017
+        # ports:
+        #     - 27020:27017
 
     web:
         build: ./nginx
         volumes:
             - ./nginx/templates:/etc/nginx/templates
         ports:
-            - '8079:80'
+            - '8050:80'
         environment:
-            - NGINX_HOST=tjv.moje
+            - NGINX_HOST=localhost
             - NGINX_PORT=80
         depends_on:
             - platform
@@ -33,10 +35,13 @@ services:
     rabbitmq:
         build: ./rabbitmq
         ports:
-            - 1889:1883
+            - 1883:1883
+            - 8883:8883
+        volumes:
+            - rabbitmq-data:/keys
 
     platform:
-        build: ../
+        image: founek2/iot-platform
         environment:
             - HOME_PAGE=http://localhost:3000
             - DATABASE_URI=mongodb://admin:admin@mongo:27017/IOTPlatform_v3?authSource=admin
@@ -45,6 +50,6 @@ services:
             - NODE_ENV=production
             - AGENDA_JOB_TYPES=
         volumes:
-            - data:/keys
+            - platform-data:/keys
         depends_on:
             - mongo
