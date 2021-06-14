@@ -1,7 +1,7 @@
 version: '3.8'
 
 volumes:
-    db:
+    mongo-db:
         driver: local
     platform-data:
         driver: local
@@ -12,13 +12,12 @@ services:
     mongo:
         image: mongo
         environment:
-            - MONGO_INITDB_ROOT_USERNAME=admin
-            - MONGO_INITDB_ROOT_PASSWORD=admin
-            - MONGO_INITDB_DATABASE=IOTPlatform_v3
+            - MONGO_INITDB_ROOT_USERNAME=mongoadmin
+            - MONGO_INITDB_ROOT_PASSWORD=secret
         volumes:
-            - db:/data/db
-        # ports:
-        #     - 27020:27017
+            - mongo-db:/data/db
+        ports:
+            - 27020:27017
 
     web:
         build: ./nginx
@@ -35,16 +34,16 @@ services:
     rabbitmq:
         build: ./rabbitmq
         ports:
-            - 1883:1883
-            - 8883:8883
+            - 1583:1883
+            - 8583:8883
         volumes:
             - rabbitmq-data:/keys
 
     platform:
         image: founek2/iot-platform
         environment:
-            - HOME_PAGE=http://localhost:3000
-            - DATABASE_URI=mongodb://admin:admin@mongo:27017/IOTPlatform_v3?authSource=admin
+            - HOME_PAGE=http://localhost:8080
+            - DATABASE_URI=mongodb://mongoadmin:secret@mongo:27017/IOTPlatform_v3?authSource=admin
             - MQTT_URL=mqtts://rabbitmq
             - MQTT_PORT=8883
             - NODE_ENV=production
