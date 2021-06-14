@@ -1,6 +1,6 @@
 # IoT PLatform setup
 
-This repository acts as example to get up and running IoT Platform.
+This repository acts as an example to get up and running IoT Platform.
 
 ## How to use
 
