@@ -8,10 +8,10 @@ volumes:
 
 services:
     mongo:
-        build: ./mongo
+        image: mongo
         environment:
-            - MONGO_INITDB_ROOT_USERNAME=root
-            - MONGO_INITDB_ROOT_PASSWORD=root
+            - MONGO_INITDB_ROOT_USERNAME=admin
+            - MONGO_INITDB_ROOT_PASSWORD=admin
             - MONGO_INITDB_DATABASE=IOTPlatform_v3
         volumes:
             - db:/data/db
@@ -39,7 +39,7 @@ services:
         build: ../
         environment:
             - HOME_PAGE=http://localhost:3000
-            - DATABASE_URI=mongodb://admin:admin@mongo:27017/IOTPlatform_v3
+            - DATABASE_URI=mongodb://admin:admin@mongo:27017/IOTPlatform_v3?authSource=admin
             - MQTT_URL=mqtts://rabbitmq
             - MQTT_PORT=8883
             - NODE_ENV=production
