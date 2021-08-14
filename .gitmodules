@@ -1,0 +1,3 @@
+[submodule "node-red/project"]
+	path = node-red/project
+	url = https://github.com/founek2/IOT-node-red.git

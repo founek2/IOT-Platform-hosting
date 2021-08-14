@@ -10,7 +10,7 @@ volumes:
 
 services:
     mongo:
-        image: mongo
+        image: mongo:4.4.8
         environment:
             - MONGO_INITDB_ROOT_USERNAME=mongoadmin
             - MONGO_INITDB_ROOT_PASSWORD=secret
@@ -38,6 +38,11 @@ services:
             - 8583:8883
         volumes:
             - rabbitmq-data:/keys
+
+    node-red:
+        build: ./node-red
+        environment:
+            - PLATFORM_URL=http://platform:8080
 
     platform:
         image: founek2/iot-platform
