@@ -25,8 +25,8 @@ services:
         ports:
             - '8050:80'
         environment:
-            - NGINX_HOST=example.com
             - NGINX_PORT=80
+            # - NGINX_HOST=example.com
         depends_on:
             - platform
 
@@ -48,13 +48,12 @@ services:
     platform:
         image: founek2/iot-platform
         environment:
-            - PORT=8085
-            - HOME_PAGE=http://example.com:8085
             - DATABASE_URI=mongodb://mongo:27017/IOTPlatform_v3?authSource=admin
             - MQTT_URL=mqtts://rabbitmq
             - MQTT_PORT=8883
             - NODE_ENV=production
-            - AGENDA_JOB_TYPES=
+            # - AGENDA_JOB_TYPES=
+            # - HOME_PAGE=http://example.com:8050
         volumes:
             - platform-data:/keys
         depends_on:
