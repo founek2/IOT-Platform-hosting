@@ -15,18 +15,17 @@ services:
         image: mongo:4.4.8
         volumes:
             - mongo-db:/data/db
-        ports:
-            - 27020:27017
 
     nginx:
         build: ./nginx
         volumes:
             - ./nginx/templates:/etc/nginx/templates
         ports:
-            - '8050:80'
+            - '80:80'
+            - '443:443'
         environment:
-            - NGINX_PORT=80
-            # - NGINX_HOST=example.com
+            #replace
+            - NGINX_HOST=example.com
         depends_on:
             - platform
 
@@ -52,8 +51,9 @@ services:
             - MQTT_URL=mqtts://rabbitmq
             - MQTT_PORT=8883
             - NODE_ENV=production
-            # - AGENDA_JOB_TYPES=
-            # - HOME_PAGE=http://example.com:8050
+            #replace
+            - AGENDA_JOB_TYPES=
+            - HOME_PAGE=http://example.com
         volumes:
             - platform-data:/keys
         depends_on:
