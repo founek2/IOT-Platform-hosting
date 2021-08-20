@@ -22,7 +22,6 @@ services:
             - ./nginx/templates:/etc/nginx/templates
         ports:
             - '80:80'
-            - '443:443'
         environment:
             #replace
             - NGINX_HOST=example.com
