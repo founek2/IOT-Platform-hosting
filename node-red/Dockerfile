@@ -15,7 +15,7 @@ RUN set -ex && \
 WORKDIR /node-red
 
 # package.json contains Node-RED NPM module and node dependencies
-COPY ./docker-entrypoint.sh ./package.json ./project/home_dir/settings.js ./project/home_dir/user-authentication.js ./
+COPY ./docker-entrypoint.sh ./package.json ./template/home_dir/settings.js ./template/home_dir/user-authentication.js ./
 
 RUN npm install
 
