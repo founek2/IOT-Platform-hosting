@@ -6,6 +6,7 @@ RUN set -ex && \
     apk add --no-cache \
     bash \
     openssl \
+    tzdata \
     ca-certificates && \
     mkdir -p /node-red/data
 # chown -R node-red:node-red /data && \
