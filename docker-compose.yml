@@ -1,55 +1,57 @@
 version: '3.8'
 
 volumes:
-  mongo-db:
-    driver: local
-  platform-data:
-    driver: local
-  rabbitmq-data:
-    driver: local
-  node-red-data:
-    driver: local
+    mongo-db:
+        driver: local
+    platform-data:
+        driver: local
+    rabbitmq-data:
+        driver: local
+    node-red-data:
+        driver: local
 
 services:
-  mongo:
-    image: mongo:4.4.8
-    restart: always
-    volumes:
-      - mongo-db:/data/db
+    mongo:
+        image: mongo:4.4.8
+        restart: always
+        volumes:
+            - mongo-db:/data/db
 
-  rabbitmq:
-    build: ./rabbitmq
-    restart: always
-    ports:
-      - 1883:1883
-      - 8883:8883
-    volumes:
-      - rabbitmq-data:/keys
+    rabbitmq:
+        build: ./rabbitmq
+        restart: always
+        ports:
+            - 1883:1883
+            - 8883:8883
+        volumes:
+            - rabbitmq-data:/keys
 
-  node-red:
-    build: ./node-red
-    restart: always
-    ports:
-      - 81:1880
-    environment:
-      - PLATFORM_URL=http://platform:8085
-    volumes:
-      - node-red-data:/node-red/data
+    node-red:
+        build: ./node-red
+        restart: always
+        ports:
+            - 81:1880
+        environment:
+            - PLATFORM_URL=http://platform:8085
+        volumes:
+            - node-red-data:/node-red/data
 
-  platform:
-    image: founek2/iot-platform
-    restart: always
-    ports:
-      - '80:8085'
-    environment:
-      - DATABASE_URI=mongodb://mongo:27017/IOTPlatform_v3?authSource=admin
-      - MQTT_URL=mqtts://rabbitmq
-      - MQTT_PORT=8883
-      - NODE_ENV=production
-      #replace
-      - AGENDA_JOB_TYPES=
-      - HOME_PAGE=http://example.com
-    volumes:
-      - platform-data:/keys
-    depends_on:
-      - mongo
+    platform:
+        image: founek2/iot-platform
+        restart: always
+        ports:
+            - '80:8085'
+        environment:
+            - DATABASE_URI=mongodb://mongo:27017/IOTPlatform_v3?authSource=admin
+            - MQTT_URL=mqtts://rabbitmq
+            - MQTT_PORT=8883
+            - NODE_ENV=production
+            - LOG_LEVEL=2
+            #replace
+            - AGENDA_JOB_TYPES=
+            - HOME_PAGE=http://example.com
+        volumes:
+            - platform-data:/keys
+        depends_on:
+            - mongo
+            - rabbitmq
