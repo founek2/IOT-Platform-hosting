@@ -1,57 +1,117 @@
 version: '3.8'
 
-volumes:
-    mongo-db:
-        driver: local
-    platform-data:
-        driver: local
-    rabbitmq-data:
-        driver: local
-    node-red-data:
-        driver: local
 
 services:
     mongo:
         image: mongo:4.4.8
         restart: always
         volumes:
-            - mongo-db:/data/db
+            - ./volumes/mongo:/data/db
+        healthcheck:
+            test: echo 'db.runCommand("ping").ok' | mongo mongo:27017/test --quiet
+            interval: 10s
+            timeout: 10s
+            retries: 5
+            start_period: 40s
+
+    influx-db:
+        image: influxdb:2.1-alpine
+        restart: always
+        healthcheck:
+            test:  wget --no-cache --spider http://localhost:8086/ping
+            interval: 30s
+            timeout: 30s
+            retries: 3
+        environment:
+            DOCKER_INFLUXDB_INIT_MODE: setup
+            DOCKER_INFLUXDB_INIT_USERNAME: "${INFLUXDB_USERNAME}"
+            DOCKER_INFLUXDB_INIT_PASSWORD: "${INFLUXDB_PASSWORD}"
+            DOCKER_INFLUXDB_INIT_ORG: "${INFLUXDB_ORGANIZATION}"
+            DOCKER_INFLUXDB_INIT_BUCKET: "${INFLUXDB_BUCKET}"
+            DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: "${INFLUXDB_ADMIN_TOKEN}"
+        volumes:
+                - ./volumes/influx:/var/lib/influxdb
+        ports:
+            - '82:8086'
 
     rabbitmq:
         build: ./rabbitmq
         restart: always
+        healthcheck:
+            test: rabbitmq-diagnostics -q ping
+            interval: 30s
+            timeout: 30s
+            retries: 3
         ports:
             - 1883:1883
             - 8883:8883
         volumes:
-            - rabbitmq-data:/keys
-
+            - ./volumes/rabbitmq:/keys
+        depends_on:
+            - iot-auth
     node-red:
         build: ./node-red
         restart: always
         ports:
             - 81:1880
         environment:
-            - PLATFORM_URL=http://platform:8085
+            - PLATFORM_URL=http://iot-server:8085
         volumes:
-            - node-red-data:/node-red/data
+            - ./volumes/node-red:/node-red/data
 
-    platform:
+    iot-auth:
         image: founek2/iot-platform
+        command: "node ./packages/backend-auth/dist/index.js"
         restart: always
-        ports:
-            - '80:8085'
-        environment:
-            - DATABASE_URI=mongodb://mongo:27017/IOTPlatform_v3?authSource=admin
-            - MQTT_URL=mqtts://rabbitmq
-            - MQTT_PORT=8883
-            - NODE_ENV=production
-            - LOG_LEVEL=2
-            #replace
-            - AGENDA_JOB_TYPES=
-            - HOME_PAGE=http://example.com
         volumes:
-            - platform-data:/keys
+            - ./volumes/auth:/keys
+        environment:
+            DATABASE_URI: '${DATABASE_URI}'
+            OAUTH_SEZNAM_CLIENT_SECRET: "${OAUTH_SEZNAM_CLIENT_SECRET}"
+            OAUTH_SEZNAM_CLIENT_ID: "${OAUTH_SEZNAM_CLIENT_ID}"
+            LOG_LEVEL: "${LOG_LEVEL}"
+            JWT_EXPIRES_IN: "${JWT_EXPIRES_IN}"
         depends_on:
             - mongo
-            - rabbitmq
+
+    iot-mqtt:
+        image: founek2/iot-platform
+        command: "node ./packages/backend-mqtt/dist/index.js"
+        restart: always
+        environment:
+            SERVICE_AUTH_URI: "iot-auth:8084"
+            INFLUX_URL: "http://influx-db:8086"
+            INFLUX_API_KEY: "${INFLUXDB_ADMIN_TOKEN}"
+            INFLUX_ORGANIZATION: "${INFLUXDB_ORGANIZATION}"
+            INFLUX_BUCKET: "${INFLUXDB_BUCKET}"
+            DATABASE_URI: '${DATABASE_URI}'
+            FIREBASE_ADMIN_PATH: "${FIREBASE_ADMIN_PATH}"
+            LOG_LEVEL: "${LOG_LEVEL}"
+            JWT_EXPIRES_IN: "${JWT_EXPIRES_IN}"
+            MQTT_URL: mqtts://rabbitmq
+        volumes:
+            - ./volumes/auth:/keys
+        depends_on:
+            - mongo
+            - iot-auth
+            - influx-db
+    iot-server:
+        image: founek2/iot-platform
+        command: "node ./packages/backend/dist/index.js"
+        restart: always
+        ports:
+            - 8085:8085
+        environment:
+            SERVICE_AUTH_URI: iot-auth:8084
+            SERVICE_MQTT_URI: iot-mqtt:8083
+            DATABASE_URI: '${DATABASE_URI}'
+            AGENDA_JOB_TYPES: "${AGENDA_JOB_TYPES}"
+            LOG_LEVEL: "${LOG_LEVEL}"
+            JWT_EXPIRES_IN: "${JWT_EXPIRES_IN}"
+        volumes:
+            - ./volumes/auth:/keys
+        depends_on:
+            - mongo
+            - iot-auth
+
+
