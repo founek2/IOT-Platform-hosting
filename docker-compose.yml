@@ -6,7 +6,7 @@ services:
         image: mongo:4.4.8
         restart: always
         volumes:
-            - ./volumes/mongo:/data/db
+            - ${VOLUMES_PATH}/mongo:/data/db
         healthcheck:
             test: echo 'db.runCommand("ping").ok' | mongo mongo:27017/test --quiet
             interval: 10s
@@ -30,7 +30,7 @@ services:
             DOCKER_INFLUXDB_INIT_BUCKET: "${INFLUXDB_BUCKET}"
             DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: "${INFLUXDB_ADMIN_TOKEN}"
         volumes:
-                - ./volumes/influx:/var/lib/influxdb
+                - ${VOLUMES_PATH}/influx:/var/lib/influxdb
         ports:
             - '82:8086'
 
@@ -46,7 +46,7 @@ services:
             - 1883:1883
             - 8883:8883
         volumes:
-            - ./volumes/rabbitmq:/keys
+            - ${VOLUMES_PATH}/rabbitmq:/keys
         depends_on:
             - iot-auth
     node-red:
@@ -57,14 +57,14 @@ services:
         environment:
             - PLATFORM_URL=http://iot-server:8085
         volumes:
-            - ./volumes/node-red:/node-red/data
+            - ${VOLUMES_PATH}/node-red:/node-red/data
 
     iot-auth:
         image: founek2/iot-platform
         command: "node ./packages/backend-auth/dist/index.js"
         restart: always
         volumes:
-            - ./volumes/auth:/keys
+            - .{VOLUMES_PATH}/auth:/keys
         environment:
             DATABASE_URI: '${DATABASE_URI}'
             OAUTH_SEZNAM_CLIENT_SECRET: "${OAUTH_SEZNAM_CLIENT_SECRET}"
@@ -79,7 +79,7 @@ services:
         command: "node ./packages/backend-mqtt/dist/index.js"
         restart: always
         environment:
-            SERVICE_AUTH_URI: "iot-auth:8084"
+            SERVICE_AUTH_URI: http://iot-auth:8084
             INFLUX_URL: "http://influx-db:8086"
             INFLUX_API_KEY: "${INFLUXDB_ADMIN_TOKEN}"
             INFLUX_ORGANIZATION: "${INFLUXDB_ORGANIZATION}"
@@ -90,7 +90,7 @@ services:
             JWT_EXPIRES_IN: "${JWT_EXPIRES_IN}"
             MQTT_URL: mqtts://rabbitmq
         volumes:
-            - ./volumes/auth:/keys
+            - ${VOLUMES_PATH}/auth:/keys
         depends_on:
             - mongo
             - iot-auth
@@ -102,14 +102,14 @@ services:
         ports:
             - 8085:8085
         environment:
-            SERVICE_AUTH_URI: iot-auth:8084
-            SERVICE_MQTT_URI: iot-mqtt:8083
+            SERVICE_AUTH_URI: http://iot-auth:8084
+            SERVICE_MQTT_URI: http://iot-mqtt:8083
             DATABASE_URI: '${DATABASE_URI}'
             AGENDA_JOB_TYPES: "${AGENDA_JOB_TYPES}"
             LOG_LEVEL: "${LOG_LEVEL}"
             JWT_EXPIRES_IN: "${JWT_EXPIRES_IN}"
         volumes:
-            - ./volumes/auth:/keys
+            - ${VOLUMES_PATH}/auth:/keys
         depends_on:
             - mongo
             - iot-auth
