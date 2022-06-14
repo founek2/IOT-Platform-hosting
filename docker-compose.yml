@@ -64,7 +64,7 @@ services:
         command: "node ./packages/backend-auth/dist/index.js"
         restart: always
         volumes:
-            - .{VOLUMES_PATH}/auth:/keys
+            - ${VOLUMES_PATH}/auth:/keys
         environment:
             DATABASE_URI: '${DATABASE_URI}'
             OAUTH_SEZNAM_CLIENT_SECRET: "${OAUTH_SEZNAM_CLIENT_SECRET}"
