@@ -32,7 +32,7 @@ services:
         volumes:
                 - ${VOLUMES_PATH}/influx:/var/lib/influxdb
         ports:
-            - '82:8086'
+            - '${INFLUXDB_PORT}:8086'
 
     rabbitmq:
         build: ./rabbitmq
@@ -43,8 +43,8 @@ services:
             timeout: 30s
             retries: 3
         ports:
-            - 1883:1883
-            - 8883:8883
+            - ${MQTT_PORT}:1883
+            - ${MQTTS_PORT}:8883
         volumes:
             - ${VOLUMES_PATH}/rabbitmq:/keys
         depends_on:
@@ -53,7 +53,7 @@ services:
         build: ./node-red
         restart: always
         ports:
-            - 81:1880
+            - ${NODE_RED_PORT}:1880
         environment:
             - PLATFORM_URL=http://iot-server:8085
         volumes:
@@ -100,7 +100,7 @@ services:
         command: "node ./packages/backend/dist/index.js"
         restart: always
         ports:
-            - 8085:8085
+            - ${PLATFORM_PORT}:8085
         environment:
             SERVICE_AUTH_URI: http://iot-auth:8084
             SERVICE_MQTT_URI: http://iot-mqtt:8083
