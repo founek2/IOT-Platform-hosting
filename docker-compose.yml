@@ -47,8 +47,7 @@ services:
             - ${MQTTS_PORT}:8883
         volumes:
             - ${VOLUMES_PATH}/rabbitmq:/keys
-        depends_on:
-            - iot-auth
+
     node-red:
         build: ./node-red
         restart: always
