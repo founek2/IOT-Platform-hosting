@@ -4,7 +4,7 @@ const fetch = require('node-fetch');
 
 const URL = process.env.PLATFORM_URL;
 const AUTH_TYPE_PATH = '/api/user/martas?attribute=authType';
-const LOGIN_PATH = '/api/authorization';
+const LOGIN_PATH = '/api/auth/user';
 
 if (!URL || URL === '') throw new Error('env PLATFORM_URL must be specified');
 
@@ -48,7 +48,7 @@ module.exports = {
             if (res.status !== 200) return resolve(null);
 
             const body = await res.json();
-            if (body.user.groups.some((group) => group === 'admin' || group === 'root')) {
+            if (body.user.groups.some((group) => group === 'admin' || group === 'root' || group === 'flow')) {
                 // Resolve with the user object. Equivalent to having
                 // called users(username);
                 var user = { username: username, permissions: '*' };
