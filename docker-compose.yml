@@ -30,7 +30,7 @@ services:
             DOCKER_INFLUXDB_INIT_BUCKET: "${INFLUXDB_BUCKET}"
             DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: "${INFLUXDB_ADMIN_TOKEN}"
         volumes:
-                - ${VOLUMES_PATH}/influx:/var/lib/influxdb
+                - ${VOLUMES_PATH}/influx:/var/lib/influxdb2
         ports:
             - '${INFLUXDB_PORT}:8086'
 
