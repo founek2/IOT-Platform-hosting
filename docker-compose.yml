@@ -122,6 +122,7 @@ services:
             SERVICE_AUTH_URI: http://iot-auth:8084
             SERVICE_MQTT_URI: http://iot-mqtt:8083
             DATABASE_URI: '${DATABASE_URI}'
+            HOME_PAGE: "${HOME_PAGE}"
             AGENDA_JOB_TYPES: "${AGENDA_JOB_TYPES}"
             LOG_LEVEL: "${LOG_LEVEL}"
             JWT_EXPIRES_IN: "${JWT_EXPIRES_IN}"
