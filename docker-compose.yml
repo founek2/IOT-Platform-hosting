@@ -125,6 +125,9 @@ services:
             AGENDA_JOB_TYPES: "${AGENDA_JOB_TYPES}"
             LOG_LEVEL: "${LOG_LEVEL}"
             JWT_EXPIRES_IN: "${JWT_EXPIRES_IN}"
+            EMAIL_HOST: "${EMAIL_HOST}"
+            EMAIL_USERNAME: "${EMAIL_USERNAME}"
+            EMAIL_PASSWORD: "${EMAIL_PASSWORD}"
         volumes:
             - ${VOLUMES_PATH}/auth:/keys
         depends_on:
