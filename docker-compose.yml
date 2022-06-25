@@ -59,7 +59,7 @@ services:
             - ${VOLUMES_PATH}/node-red:/node-red/data
 
     iot-auth:
-        image: founek2/iot-platform
+        image: ${IOT_PLATFORM_IMAGE}
         command: "node ./packages/backend-auth/dist/index.js"
         restart: always
         healthcheck:
@@ -80,7 +80,7 @@ services:
             - mongo
 
     iot-mqtt:
-        image: founek2/iot-platform
+        image: ${IOT_PLATFORM_IMAGE}
         command: "node ./packages/backend-mqtt/dist/index.js"
         restart: always
         healthcheck:
@@ -107,7 +107,7 @@ services:
             - iot-auth
             - influx-db
     iot-server:
-        image: founek2/iot-platform
+        image: ${IOT_PLATFORM_IMAGE}
         command: "node ./packages/backend/dist/index.js"
         restart: always
         healthcheck:
