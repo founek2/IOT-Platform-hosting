@@ -45,6 +45,7 @@ services:
         ports:
             - ${MQTT_PORT}:1883
             - ${MQTTS_PORT}:8883
+            - ${RABBITMQ_WEB_UI}:15672
         volumes:
             - ${VOLUMES_PATH}/rabbitmq:/keys
 
