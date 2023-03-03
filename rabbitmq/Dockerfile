@@ -1,4 +1,4 @@
-FROM rabbitmq:3-management-alpine
+FROM rabbitmq:3.11-alpine
 
 RUN apk update && apk add openssh-keygen git openssl make python3 &&  mkdir /keys
 
