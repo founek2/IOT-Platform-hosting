@@ -32,7 +32,6 @@
         "dotenv": "^10.0.0",
         "node-red": "2.2.3",
         "node-red-contrib-simple-gate": "0.5.2",
-        "node-red-contrib-credentials": "0.2.2",
         "node-fetch": "^2.6.1"
     },
     "engines": {
