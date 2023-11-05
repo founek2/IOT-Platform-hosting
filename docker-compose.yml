@@ -62,7 +62,7 @@ services:
 
     iot-auth:
         image: ${IOT_PLATFORM_IMAGE}
-        command: "node ./packages/backend-auth/dist/index.js"
+        command: bash -c "./generate-jwt-certs.sh && node ./packages/backend-auth/dist/index.js"
         restart: always
         healthcheck:
             test:  wget --no-cache --tries=1 --spider http://localhost:8084/api || exit 1
