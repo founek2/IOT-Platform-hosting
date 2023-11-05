@@ -1,6 +1,5 @@
 version: '3.8'
 
-
 services:
     mongo:
         image: mongo:4.4.8
@@ -24,11 +23,11 @@ services:
             retries: 3
         environment:
             DOCKER_INFLUXDB_INIT_MODE: setup
-            DOCKER_INFLUXDB_INIT_USERNAME: "${INFLUXDB_USERNAME}"
-            DOCKER_INFLUXDB_INIT_PASSWORD: "${INFLUXDB_PASSWORD}"
-            DOCKER_INFLUXDB_INIT_ORG: "${INFLUXDB_ORGANIZATION}"
-            DOCKER_INFLUXDB_INIT_BUCKET: "${INFLUXDB_BUCKET}"
-            DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: "${INFLUXDB_ADMIN_TOKEN}"
+            DOCKER_INFLUXDB_INIT_USERNAME: "${INFLUX_USERNAME}"
+            DOCKER_INFLUXDB_INIT_PASSWORD: "${INFLUX_PASSWORD}"
+            DOCKER_INFLUXDB_INIT_ORG: "${INFLUX_ORGANIZATION}"
+            DOCKER_INFLUXDB_INIT_BUCKET: "${INFLUX_BUCKET}"
+            DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: "${INFLUX_API_KEY}"
         volumes:
                 - ${VOLUMES_PATH}/influx:/var/lib/influxdb2
         ports:
@@ -73,12 +72,7 @@ services:
             timeout: 10s
         volumes:
             - ${VOLUMES_PATH}/auth:/keys
-        environment:
-            DATABASE_URI: '${DATABASE_URI}'
-            OAUTH_SEZNAM_CLIENT_SECRET: "${OAUTH_SEZNAM_CLIENT_SECRET}"
-            OAUTH_SEZNAM_CLIENT_ID: "${OAUTH_SEZNAM_CLIENT_ID}"
-            LOG_LEVEL: "${LOG_LEVEL}"
-            JWT_EXPIRES_IN: "${JWT_EXPIRES_IN}"
+        env_file: .env
         depends_on:
             - mongo
 
@@ -95,17 +89,11 @@ services:
         environment:
             SERVICE_AUTH_URI: http://iot-auth:8084
             INFLUX_URL: "http://influx-db:8086"
-            INFLUX_API_KEY: "${INFLUXDB_ADMIN_TOKEN}"
-            INFLUX_ORGANIZATION: "${INFLUXDB_ORGANIZATION}"
-            INFLUX_BUCKET: "${INFLUXDB_BUCKET}"
-            DATABASE_URI: '${DATABASE_URI}'
-            FIREBASE_ADMIN_PATH: "${FIREBASE_ADMIN_PATH}"
-            LOG_LEVEL: "${LOG_LEVEL}"
-            JWT_EXPIRES_IN: "${JWT_EXPIRES_IN}"
             MQTT_URL: ws://rabbitmq/ws
             MQTT_PORT: 15675
         volumes:
             - ${VOLUMES_PATH}/auth:/keys
+        env_file: .env
         depends_on:
             - mongo
             - iot-auth
@@ -125,16 +113,10 @@ services:
         environment:
             SERVICE_AUTH_URI: http://iot-auth:8084
             SERVICE_MQTT_URI: http://iot-mqtt:8083
-            DATABASE_URI: '${DATABASE_URI}'
-            HOME_PAGE: "${HOME_PAGE}"
-            AGENDA_JOB_TYPES: "${AGENDA_JOB_TYPES}"
-            LOG_LEVEL: "${LOG_LEVEL}"
-            JWT_EXPIRES_IN: "${JWT_EXPIRES_IN}"
-            EMAIL_HOST: "${EMAIL_HOST}"
-            EMAIL_USERNAME: "${EMAIL_USERNAME}"
-            EMAIL_PASSWORD: "${EMAIL_PASSWORD}"
+            MQTT_URL: ws://rabbitmq/ws
         volumes:
             - ${VOLUMES_PATH}/auth:/keys
+        env_file: .env
         depends_on:
             - mongo
             - iot-auth
