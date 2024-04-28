@@ -13,7 +13,7 @@ module.exports = {
         return new Promise(async function (resolve) {
             // Do whatever work is needed to check username is a valid
             // user.
-            const res = await fetch(URL + `/api/user/${username}?attribute=authType`);
+            const res = await fetch(URL + `/api/main/user/${username}?attribute=authType`);
             const body = await res.json();
             if (body.authTypes.some((type) => type === 'passwd')) {
                 // Resolve with the user object. It must contain
