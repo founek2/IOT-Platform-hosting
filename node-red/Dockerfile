@@ -1,5 +1,5 @@
 
-FROM node:16-alpine3.11
+FROM node:20-alpine3.19
 
 # Install tools, create Node-RED app and data dir, add user and set rights
 RUN set -ex && \
